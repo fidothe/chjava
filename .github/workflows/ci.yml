@@ -23,4 +23,4 @@ jobs:
       - name: Setup shells
         run: PREFIX="${RUNNER_TEMP}/chjava" make ci_shell_conf
       - name: Run all tests
-        run: make ci
+        run: PREFIX="${RUNNER_TEMP}/chjava" make ci
