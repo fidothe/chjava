@@ -43,6 +43,11 @@ integration_tests:
 	SHELL=`command -v bash` ./test/integration/runner
 	SHELL=`command -v zsh`  ./test/integration/runner
 
+ci_shell_conf:
+	PREFIX=$(PREFIX) ./scripts/rc_generate.sh > ~/.zshrc
+	PREFIX=$(PREFIX) ./scripts/rc_generate.sh > ~/.bashrc
+	cp test/ci/dot_bash_profile ~/.bash_profile
+
 ci: test integration_tests
 
 tag:

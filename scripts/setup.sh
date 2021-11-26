@@ -51,11 +51,7 @@ make install
 #
 log "Configuring chjava ..."
 
-config="if [ -d "$PREFIX/share/chjava" ]; then
-  if [ -n \"\$BASH_VERSION\" ] || [ -n \"\$ZSH_VERSION\" ]; then
-    source \"$PREFIX/share/chjava/chjava.sh\"
-  fi
-fi"
+config="$($(dirname $0)/rc_generate.sh)"
 
 if [[ -d /etc/profile.d/ ]]; then
   # Bash/Zsh
