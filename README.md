@@ -15,7 +15,6 @@ was the last straw.)
 ## Features
 
 * Sets `$JAVA_HOME`
-* Calls `hash -r` to clear the command-lookup hash-table. (Just in case.)
 * Fuzzy matching of JDK version by version number (`11` will match `11.0.8`, or the latest version installed JDK 11).
 * Supports picking JDK by architecture (e.g. use x86_64 on an Apple Silicon Mac).
 * Supports any macOS packaged JDK/JRE installed in the standard macOS Java place.
@@ -57,11 +56,48 @@ Simply run the script as root or via `sudo`:
 sudo ./scripts/setup.sh
 ```
 
-Or the absolute latest chjava can be installed from source:
+## Examples
 
-```shell
-brew install chjava --HEAD
-```
+List available JDKs:
+
+    $ chjava
+       adoptopenjdk-8.jdk 1.8.0_292 [x86_64]
+       zulu-11.jdk 11.0.13 [x86_64]
+       zulu-17.jdk 17.0.1 [arm64]
+       zulu-8.jdk 1.8.0_312 [arm64]
+
+Select a JDK:
+
+    $ chjava 17
+    $ chjava
+       adoptopenjdk-8.jdk 1.8.0_292 [x86_64]
+       zulu-11.jdk 11.0.13 [x86_64]
+     * zulu-17.jdk 17.0.1 [arm64]
+       zulu-8.jdk 1.8.0_312 [arm64]
+    $ echo $JAVA_HOME
+    /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+
+`chjava` ignores non-native arch JDKs by default:
+
+    $ chjava 11
+    chjava: unknown Java: 11
+    $ echo $?
+    1
+
+But, you can specify the arch you want:
+
+    $ chjava 11 x86_64
+    $ chjava
+       adoptopenjdk-8.jdk 1.8.0_292 [x86_64]
+     * zulu-11.jdk 11.0.13 [x86_64]
+       zulu-17.jdk 17.0.1 [arm64]
+       zulu-8.jdk 1.8.0_312 [arm64]
+
+Switch back to system default Java:
+
+    $ chjava system
+    $ test -z $JAVA_HOME && echo "system default"
+    system default
 
 ## Acknowledgements
 

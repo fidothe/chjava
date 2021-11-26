@@ -35,10 +35,7 @@ clean:
 check:
 	shellcheck share/$(NAME)/*.sh
 
-configure_tests:
-	./test/unit/configure
-
-test: configure_tests
+test:
 	SHELL=`command -v bash` ./test/unit/runner
 	SHELL=`command -v zsh`  ./test/unit/runner
 

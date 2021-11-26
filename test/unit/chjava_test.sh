@@ -2,12 +2,12 @@
 
 function setUp()
 {
-  test_jdks=("emperor-11.jdk:11.0.1:${test_default_arch}" "rockhopper-11.jdk:11.0.8:${test_default_arch}")
+  test_jdks=("${test_jvm_library_dir}/emperor-11.jdk:emperor-11.jdk:11.0.1:${test_default_arch}" "${test_jvm_library_dir}/rockhopper-11.jdk:rockhopper-11.jdk:11.0.8:${test_default_arch}")
 	original_jdks=(${CHJAVA_JDKS[@]})
   original_library_jdk_dir="${CHJAVA_LIBRARY_JDK_DIR}"
   CHJAVA_LIBRARY_JDK_DIR="${test_jvm_library_dir}"
   test_java_version_x="11"
-  test_java_home="${test_jvm_library_dir}/rockhopper-11.jdk"
+  test_java_home="${test_jvm_library_dir}/rockhopper-11.jdk/Contents/Home"
 }
 
 function test_chjava_X()
@@ -24,11 +24,13 @@ function test_chjava_exact_match_first()
 
 	chjava "11.0.1"
 
-	assertEquals "did not use the exact match" "${test_jvm_library_dir}/emperor-11.jdk" "$JAVA_HOME"
+	assertEquals "did not use the exact match" "${test_jvm_library_dir}/emperor-11.jdk/Contents/Home" "$JAVA_HOME"
 }
 
 function test_chjava_system()
 {
+  CHJAVA_JDKS=(${test_jdks[@]})
+
 	chjava "$test_java_version" >/dev/null
 	chjava system
 

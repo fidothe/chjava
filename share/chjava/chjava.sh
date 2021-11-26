@@ -3,16 +3,17 @@ CHJAVA_LIBRARY_JDK_DIR="/Library/Java/JavaVirtualMachines"
 CHJAVA_JDKS=()
 
 function chjava_jdk_entry() {
-  local jdk_arch jdk_version
-  jdk_arch=$(file "${CHJAVA_LIBRARY_JDK_DIR}/$1/Contents/MacOS/libjli.dylib" | rev | cut -d ' ' -f 1 | rev)
-  jdk_version=$(/usr/libexec/PlistBuddy -c "print JavaVM:JVMVersion" "${CHJAVA_LIBRARY_JDK_DIR}/$1/Contents/Info.plist")
-  echo "$1:$jdk_version:$jdk_arch"
+  local jdk_name jdk_arch jdk_version
+  jdk_name="$(basename "$1")"
+  jdk_arch="$(/usr/bin/file "$1/Contents/MacOS/libjli.dylib" | rev | cut -d ' ' -f 1 | rev)"
+  jdk_version="$(/usr/libexec/PlistBuddy -c "print JavaVM:JVMVersion" "$1/Contents/Info.plist")"
+  echo "$1:$jdk_name:$jdk_version:$jdk_arch"
 }
 
 # /usr/libexec/java_home seems buggy in macOS 11 / 12, so we have to
 # handroll the list
 for jdk in "${CHJAVA_LIBRARY_JDK_DIR}"/*.jdk; do
-  CHJAVA_JDKS+=("$(chjava_jdk_entry "$jdk")}")
+  CHJAVA_JDKS+=("$(chjava_jdk_entry "$jdk")")
 done
 unset jdk
 
@@ -20,35 +21,45 @@ function chjava_reset() {
   [[ -z "$JAVA_HOME" ]] && return
 
   unset JAVA_HOME
-  hash -r
 }
 
 function chjava_use() {
-  export JAVA_HOME="$1"
-  echo "$1"
-  hash -r
+  local jdk_home jdk_name jdk_arch jdk_version
+  jdk_home="$(chjava_jdk_home $1)"
+  jdk_name="$(chjava_jdk_name $1)"
+  jdk_arch="$(chjava_jdk_arch $1)"
+  jdk_version="$(chjava_jdk_version $1)"
+  export JAVA_HOME="$jdk_home"
 }
 
-function chjava_jdk_name() {
+function chjava_jdk_path() {
   echo "$1" | cut -d ':' -f 1
 }
 
-function chjava_jdk_version() {
+function chjava_jdk_home() {
+    echo "$(chjava_jdk_path "$1")/Contents/Home"
+}
+
+function chjava_jdk_name() {
   echo "$1" | cut -d ':' -f 2
 }
 
-function chjava_jdk_arch() {
+function chjava_jdk_version() {
   echo "$1" | cut -d ':' -f 3
 }
 
+function chjava_jdk_arch() {
+  echo "$1" | cut -d ':' -f 4
+}
+
 function chjava_list_arch() {
-  local jdk name
+  local jdk jdk_home
   for jdk in "${CHJAVA_JDKS[@]}"; do
-    name=$(chjava_jdk_name "$jdk")
-    if [[ "${CHJAVA_LIBRARY_JDK_DIR}/${name}" == "$JAVA_HOME" ]]; then
-      echo " * ${name} $(chjava_jdk_version "$jdk") [$(chjava_jdk_arch "$jdk")]"
+    jdk_home=$(chjava_jdk_home "$jdk")
+    if [[ "${jdk_home}" == "$JAVA_HOME" ]]; then
+      echo " * $(chjava_jdk_name "$jdk") $(chjava_jdk_version "$jdk") [$(chjava_jdk_arch "$jdk")]"
     else
-      echo "   ${name} $(chjava_jdk_version "$jdk") [$(chjava_jdk_arch "$jdk")]"
+      echo "   $(chjava_jdk_name "$jdk") $(chjava_jdk_version "$jdk") [$(chjava_jdk_arch "$jdk")]"
     fi
   done
 }
@@ -71,9 +82,9 @@ function chjava_match() {
     return 1
   fi
 
-  match=$(printf "%s\n" "${candidates[@]}" | sort -V -k 2 -t : | tail -n1)
+  match=$(printf "%s\n" "${candidates[@]}" | sort -V -k 3 -t : | tail -n1)
 
-  chjava_jdk_name "${match}"
+  echo "${match}"
 }
 
 function chjava() {
@@ -105,7 +116,7 @@ function chjava() {
       fi
 
       shift
-      chjava_use "${CHJAVA_LIBRARY_JDK_DIR}/${match}"
+      chjava_use "${match}"
       ;;
   esac
 }
