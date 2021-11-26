@@ -73,6 +73,12 @@ function chjava_match() {
   for jdk in "${CHJAVA_JDKS[@]}"; do
     version="$(chjava_jdk_version "$jdk")"
 
+    # exact name match overrides everything else
+    if [[ $(chjava_jdk_name "$jdk") == "$1" ]]; then
+      candidates=("$jdk")
+      break
+    fi
+
     if echo "$version" | grep -E "^$1" > /dev/null && [[ "$(chjava_jdk_arch "$jdk")" == "$2" ]]; then
       candidates+=("$jdk")
     fi

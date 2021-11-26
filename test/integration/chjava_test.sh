@@ -16,8 +16,8 @@ function test_chjava()
     jdk_version="$(chjava_jdk_version "$jdk_entry")"
     jdk_arch="$(chjava_jdk_arch "$jdk_entry")"
     expected_jdk_java_home="${CHJAVA_LIBRARY_JDK_DIR}/${jdk_name}/Contents/Home"
-    echo "> chjava $jdk_version $jdk_arch ..."
-    chjava "$jdk_version" "$jdk_arch"
+    echo "> chjava $jdk_name ..."
+    chjava "$jdk_name"
     exit_status=$?
 
     assertEquals "did not exit successfully" 0 "$exit_status"
