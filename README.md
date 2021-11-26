@@ -1,5 +1,7 @@
 # chjava
 
+[![CI](https://github.com/fidothe/chjava/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fidothe/chjava/actions/workflows/ci.yml)
+
 Changes the current Java JVM in use on macOS by changing `$JAVA_HOME`. If you
 want something more, there are tools like [sdkman] which do a lot more. I wanted
 as little as possible. macOS already provides a `/usr/bin/java` that really just
