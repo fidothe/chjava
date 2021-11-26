@@ -43,6 +43,8 @@ integration_tests:
 	SHELL=`command -v bash` ./test/integration/runner
 	SHELL=`command -v zsh`  ./test/integration/runner
 
+ci: test integration_tests
+
 tag:
 	git push origin main
 	git tag -s -m "Releasing $(VERSION)" v$(VERSION)

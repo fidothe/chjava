@@ -1,0 +1,27 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-10.15
+          - macos-11
+    name: "Tests [${{ matrix.os }}]"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Java 8
+        uses: action/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+      - name: Install dependencies
+        run: brew install shunit2
+      - name: Configure env
+        run: echo "SHUNIT2=$(command -v shunit2 2>/dev/null)" >> $GITHUB_ENV
+      - name: Run all tests
+        run: make ci
