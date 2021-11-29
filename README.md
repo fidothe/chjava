@@ -4,15 +4,24 @@
 
 Changes the current Java JVM in use on macOS by changing `$JAVA_HOME`. If you
 want something more, there are tools like [sdkman] which do a lot more. I wanted
-as little as possible. macOS already provides a `/usr/bin/java` that really just
-points to a JDK/JRE under `/Library/Java/JavaVirtualMachines/`, and a mechanism
-to change which JDK is chosen (`$JAVA_HOME`).
+as little as possible.
 
-`chjava` just makes setting `JAVA_HOME` easier than mucking about with
-`export JAVA_HOME=$(/usr/libexec/java_home -v ...)` especially now that the
-`java_home` tool's filtering seems a bit buggy on macOS 11 and 12. (For me, the
-fact filtering for x86_64 JDKs on an Apple Silicon Mac with `java_home` is broken
-was the last straw.)
+`chjava` just makes setting `$JAVA_HOME` easier than mucking about with
+`export JAVA_HOME=$(/usr/libexec/java_home -v ...)`.
+
+## Why?
+
+macOS provides a shim-like `/usr/bin/java` that points at one of the JDK/JRE's
+under `/Library/Java/JavaVirtualMachines/`, and which can be explicitly chosen
+by setting `$JAVA_HOME` to point at one of those. It also provides
+`/usr/libexec/java_home` for querying available JDKs, which you often see used
+like `export JAVA_HOME=$(/usr/libexec/java_home -v 11)`. I have to switch the
+JDK I'm using a lot for different projects, and having to do the `export
+JAVA_HOME=...` dance over and over has been both tedious and error-prone.
+
+Added to that, `/usr/libexec/java_home`'s filtering seems a bit buggy on macOS
+11 and 12. (For me, the fact filtering for x86_64 JDKs on an Apple Silicon Mac
+with `java_home` is broken was the last straw.)
 
 ## Features
 
