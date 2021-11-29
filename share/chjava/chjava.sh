@@ -79,7 +79,7 @@ function chjava_match() {
       break
     fi
 
-    if echo "$version" | grep -E "^$1" > /dev/null && [[ "$(chjava_jdk_arch "$jdk")" == "$2" ]]; then
+    if echo "$version" | grep -E "^$1(?:[._]|$)" > /dev/null && [[ "$(chjava_jdk_arch "$jdk")" == "$2" ]]; then
       candidates+=("$jdk")
     fi
   done
