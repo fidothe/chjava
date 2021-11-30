@@ -1,4 +1,4 @@
-CHJAVA_VERSION="0.0.1"
+CHJAVA_VERSION="0.0.3"
 CHJAVA_LIBRARY_JDK_DIR="/Library/Java/JavaVirtualMachines"
 CHJAVA_JDKS=()
 
@@ -24,12 +24,7 @@ function chjava_reset() {
 }
 
 function chjava_use() {
-  local jdk_home jdk_name jdk_arch jdk_version
-  jdk_home="$(chjava_jdk_home $1)"
-  jdk_name="$(chjava_jdk_name $1)"
-  jdk_arch="$(chjava_jdk_arch $1)"
-  jdk_version="$(chjava_jdk_version $1)"
-  export JAVA_HOME="$jdk_home"
+  export JAVA_HOME="$(chjava_jdk_home "$1")"
 }
 
 function chjava_jdk_path() {

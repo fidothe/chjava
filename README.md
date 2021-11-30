@@ -31,6 +31,7 @@ with `java_home` is broken was the last straw.)
 * Supports any macOS packaged JDK/JRE installed in the standard macOS Java place.
 * Does not alter `$JAVA_HOME` by default.
 * Only alters `$JAVA_HOME` when run, and nothing else.
+* Optionally supports auto-switching via a .java-version file.
 * Supports [bash] and [zsh].
 * Small (~100 LOC).
 * Has tests.
@@ -52,19 +53,25 @@ with `java_home` is broken was the last straw.)
 ## Install
 
 ```shell
-wget -O chjava-0.0.1.tar.gz https://github.com/fidothe/chjava/archive/v0.0.1.tar.gz
-tar -xzvf chjava-0.0.1.tar.gz
-cd chjava-0.0.1/
+wget -O chjava-0.0.3.tar.gz https://github.com/fidothe/chjava/archive/v0.0.3.tar.gz
+tar -xzvf chjava-0.0.3.tar.gz
+cd chjava-0.0.3/
 sudo make install
 ```
 
 ### setup.sh
 
-chjava also includes a `setup.sh` script, which installs chjava into /etc/profile.d.
+chjava also includes a `setup.sh` script, which installs chjava and adds a `zshrc`/`bashrc`-type script into, by default, `/etc/profile.d` to load `chjava.sh` and `chjava/auto.sh`.
 Simply run the script as root or via `sudo`:
 
 ```shell
 sudo ./scripts/setup.sh
+```
+
+or, if you want to specifiy where to put the rc file:
+
+```shell
+sudo .scripts/setup.sh ~/.zshrc.d/
 ```
 
 ## Examples
@@ -109,6 +116,38 @@ Switch back to system default Java:
     $ chjava system
     $ test -z $JAVA_HOME && echo "system default"
     system default
+
+Specify by using the JDK folder's name:
+
+    $ chjava zulu-8.jdk
+    $ chjava
+       adoptopenjdk-8.jdk 1.8.0_292 [x86_64]
+       zulu-11.jdk 11.0.13 [x86_64]
+       zulu-17.jdk 17.0.1 [arm64]
+     * zulu-8.jdk 1.8.0_312 [arm64]
+
+## Auto-switching
+
+If you want `chjava` to auto-switch `$JAVA_HOME` for you when you `cd` between projects, then source `chjava/auto.sh` in your `.bashrc`/`.zshrc`.
+
+```shell
+source /usr/local/share/chjava/chjava.sh
+source /usr/local/share/chjava/chjava.sh
+```
+
+Much like `chruby` and other ruby auto-switchers, `chjava` will look for a special file, named `.java-version`, in the current or parent directories and switch based on it. The format is, essentially, nothing more than the arguments you'd pass to `chjava` in the file. These examples are all valid `.java-version` files.
+
+```shell
+11
+```
+
+```shell
+11 arm64
+```
+
+```shell
+zulu-17.jdk
+```
 
 ## Acknowledgements
 

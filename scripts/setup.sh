@@ -9,6 +9,7 @@ set -e
 # Constants
 #
 export PREFIX="${PREFIX:-/usr/local}"
+config_dir="${1:-/etc/profile.d}"
 
 #
 # Functions
@@ -53,10 +54,10 @@ log "Configuring chjava ..."
 
 config="$($(dirname $0)/rc_generate.sh)"
 
-if [[ -d /etc/profile.d/ ]]; then
+if [[ -d "${config_dir}" ]]; then
   # Bash/Zsh
-  log "Installing configuration into /etc/profile.d/ ..."
-  echo "$config" > /etc/profile.d/chjava.sh
+  log "Installing configuration into ${config_dir}/ ..."
+  echo "$config" > "${config_dir}/chjava.sh"
   log "Setup complete! Please restart the shell"
 else
   warning "Could not determine where to add chjava configuration."

@@ -12,7 +12,7 @@ function chjava_auto() {
 	until [[ -z "$dir" ]]; do
 		dir="${dir%/*}"
 
-		if { read "$read_opt" specifier <"$dir/.java-version"; } 2>/dev/null || [[ -n "$specifier" ]]; then
+		if { read "${read_opt?}" specifier <"$dir/.java-version"; } 2>/dev/null || [[ -n "$specifier" ]]; then
 			if [[ "${specifier[*]}" == "$CHJAVA_AUTO_VERSION" ]]; then return
 			else
 				CHJAVA_AUTO_VERSION="${specifier[*]}"
