@@ -1,5 +1,5 @@
 NAME=chjava
-VERSION=0.0.2
+VERSION=0.0.3
 AUTHOR=fidothe
 URL=https://github.com/$(AUTHOR)/$(NAME)
 
@@ -25,18 +25,27 @@ pkg:
 download: pkg
 	wget -O $(PKG) $(URL)/archive/v$(VERSION).tar.gz
 
-build: pkg
-	git archive --output=$(PKG) --prefix=$(PKG_NAME)/ HEAD
-
-clean:
-	rm -rf test/fixtures/*
-	rm -f $(PKG) $(SIG)
+$(PKG): download
 
 sign: $(PKG)
 	gpg --sign --detach-sign --armor $(PKG)
 	git add $(PKG).asc
 	git commit $(PKG).asc -m "Added PGP signature for v$(VERSION)"
 	git push origin main
+
+tag:
+	git push origin main
+	git tag -s -m "Releasing $(VERSION)" v$(VERSION)
+	git push origin main --tags
+
+release: tag sign
+
+build: pkg
+	git archive --output=$(PKG) --prefix=$(PKG_NAME)/ HEAD
+
+clean:
+	rm -rf test/fixtures/*
+	rm -f $(PKG) $(SIG)
 
 check:
 	shellcheck share/$(NAME)/*.sh
@@ -55,13 +64,6 @@ ci_shell_conf:
 	cp test/ci/dot_bash_profile ~/.bash_profile
 
 ci: test integration_tests
-
-tag:
-	git push origin main
-	git tag -s -m "Releasing $(VERSION)" v$(VERSION)
-	git push origin main --tags
-
-release: tag download sign
 
 install:
 	for dir in $(INSTALL_DIRS); do mkdir -p $(DESTDIR)$(PREFIX)/$$dir; done
