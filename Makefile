@@ -1,5 +1,5 @@
 NAME=chjava
-VERSION=0.0.1
+VERSION=0.0.2
 AUTHOR=fidothe
 URL=https://github.com/$(AUTHOR)/$(NAME)
 
@@ -32,6 +32,12 @@ clean:
 	rm -rf test/fixtures/*
 	rm -f $(PKG) $(SIG)
 
+sign: $(PKG)
+	gpg --sign --detach-sign --armor $(PKG)
+	git add $(PKG).asc
+	git commit $(PKG).asc -m "Added PGP signature for v$(VERSION)"
+	git push origin main
+
 check:
 	shellcheck share/$(NAME)/*.sh
 
@@ -55,7 +61,7 @@ tag:
 	git tag -s -m "Releasing $(VERSION)" v$(VERSION)
 	git push origin main --tags
 
-release: tag download
+release: tag download sign
 
 install:
 	for dir in $(INSTALL_DIRS); do mkdir -p $(DESTDIR)$(PREFIX)/$$dir; done
@@ -68,4 +74,4 @@ uninstall:
 	rm -rf $(DESTDIR)$(PREFIX)/$(DOC_DIR)
 	rmdir $(DESTDIR)$(PREFIX)/$(SHARE_DIR)/chjava
 
-.PHONY: build download clean check configure_tests test integration_tests tag release install uninstall all
+.PHONY: build download clean check configure_tests test integration_tests tag sign release install uninstall all
